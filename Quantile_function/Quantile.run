@@ -1,0 +1,33 @@
+model Quantile.mod;
+data Test.dat;
+
+let quant:=0.95; #percentil that I would find
+for{i in 1..N1, j in 1..card(sorted_omega[i])} let freq[i,j]:=0; #frequency vector initialization
+
+for{a in 1..N1}{
+ 	for{j in 1..card(sorted_omega[a])}
+ 		# for{i in 1..N1}{
+ 			for{k in 1..N2}{
+ 				if (omega[k,a] = member(j, sorted_omega[a])) then {let freq[a,j]:=freq[a,j]+1;}	
+ 			};
+ 		# };
+};
+
+
+for{i in 1..N1}{
+	let count:=0; #acumulated buffer
+	let count2:=1; #auxiliar counter
+
+	let bool := 1;
+
+	repeat while (bool == 1  and count2 <= card(sorted_omega[i])) {#check the accumalated frequency of data vector that satisfies the quantil and that element
+		let count := count + freq[i,count2];
+		if(count >= n_quant) then {
+			let element[i]:=member(count2, sorted_omega[i]);
+			let bool := 0;
+		};
+		let count2 := count2 +1;
+	}
+};
+
+display element;

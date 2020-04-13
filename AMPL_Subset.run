@@ -1,0 +1,21 @@
+set I ordered;
+set I2 ordered;
+param t; 
+param nb_I >=0;
+
+
+
+data;
+param nb_I := 4;
+
+
+set I:= 1 4 7 10 13 16 19 22 25;
+
+let I2 := {};
+let t := first(I);
+let I2 := I2 union {t};
+
+for{i in 2..nb_I}{
+	let t := next(t, I);
+	let I2 := I2 union {t};
+}

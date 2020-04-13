@@ -1,0 +1,46 @@
+reset;
+
+set files := {
+	"data/0.90_Dr_Ji/DataEVA_53/DataEVA_53.dat",
+	"data/0.95_Dr_Ji/DataEVA_53/DataEVA_53.dat",
+	"data/0.925_Dr_Ji/DataEVA_53/DataEVA_53.dat",
+	"data/0.90_Dr_Ji/DataEVA_54/DataEVA_54.dat",
+	"data/0.95_Dr_Ji/DataEVA_54/DataEVA_54.dat",
+	"data/0.925_Dr_Ji/DataEVA_54/DataEVA_54.dat"
+};
+
+set list_congestions := {1, 10, 20, 50};
+set list_heli_facilit := {7, 10, 14};
+
+model medevac_cc3_ter.mod;
+
+print 'Instance; Iteration; Congestion; Objective Function'>> Features.txt;
+
+for{d in files} {
+	reset data;
+	data (d);
+
+	for{hf in list_heli_facilit}{
+		let nb_T := hf;
+		let nb_I := hf;
+
+		for{i in I}{
+		let o[i,1]:= CUTPOINTNUM[i,1];
+			for{l in 2..NBCUTDIM[i]}{
+				let o[i,l] := CUTPOINTNUM[i,l] - CUTPOINTNUM[i,l-1];
+			};
+		};
+
+		for{cg in list_congestions}{
+
+			let congestion := cg;
+
+			option solver baron;
+			option baron_options 'maxtime=3600 threads=1  epsa=1e-4';
+			solve;
+		    
+		    print d,"; ", hf, "; ", cg,"; ", OBJ1 ,';' >> Results3.txt;
+		}
+	}
+
+}
